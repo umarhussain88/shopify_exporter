@@ -1,20 +1,23 @@
 from pathlib import Path
 import getpass
-from pathlib import Path 
+import pandas as pd
 
 
 TEST = False 
 src_dict = {}
 
 if TEST:
-       from environs import Env
-       e = Env()
-       e.read_env('../.env')
-       src_path = Path(e('src_path'))
+       # from environs import Env
+       # e = Env()
+       # e.read_env('../.env')
+       # src_path = Path(e('src_path'))
+       df = pd.read_excel(Path(__file__).parent.parent.parent.parent.joinpath('config.xlsx'))
+       p = df[df['config_name'].eq('source_path')]['config_value'].tolist()[0]
+       src_path = Path(fr"{p}")
 else:
        import pandas as pd
        # could just open as json, but this works for now.
-       df = pd.read_excel(Path(__file__).parent.parent.parent.joinpath('config.xlsx'))
+       df = pd.read_excel(Path(__file__).parent.parent.parent.parent.joinpath('config.xlsx'))
        p = df[df['config_name'].eq('source_path')]['config_value'].tolist()[0]
        src_path = Path(fr"{p}")
        

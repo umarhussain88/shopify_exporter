@@ -4,15 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pandas = "*"
-xlrd = "*"
-openpyxl = "*"
-winrt = "*"
 
 [dev-packages]
-ipython = "*"
-environs = "*"
-jupyterlab = "*"
 
 [requires]
 python_version = "3.8"

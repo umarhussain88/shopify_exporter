@@ -1,7 +1,7 @@
 from typing import Optional
 import logging
 import platform
-
+from pathlib import Path
 from helpers import (src_dict, 
                     create_file_timestamp, 
                     get_newest_file,
@@ -10,13 +10,16 @@ from helpers import (src_dict,
 import pandas as pd
 
 
-
+p = Path(__file__).parent.parent.joinpath('logs')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
 
-file_handler = logging.FileHandler(f'logs/{create_file_timestamp()}_export.log')
+if not Path(__file__).parent.parent.joinpath('logs').is_dir():
+    Path(__file__).parent.parent.joinpath('logs').mkdir(parents=True)
+
+file_handler = logging.FileHandler(p.joinpath(f'{create_file_timestamp()}_export.log'))
 file_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
@@ -32,7 +35,9 @@ if not src_dict['src_path'].is_dir():
 def transform_raw_data(raw_path : str, extension: Optional[str] = 'xls') -> pd.DataFrame:
 
     raw_file = get_newest_file(raw_path, extension)
-    logger.info(f'parsing {raw_file.name}')
+
+    raw_file_name = raw_file.name.encode('utf-8')
+    logger.info(f'parsing {raw_file_name}')
 
     try:
         raw_df = pd.read_excel(raw_file)
@@ -114,10 +119,11 @@ def main():
         dim_df = dimension_lookups(src_dict['dim'])
         missing_df = create_shopify_export(raw_df, dim_df, output_columns, src_dict['output'], dt)
         create_missing_output(missing_df)
+        toast_builder(src_dict['sucess_toast'])
     except Exception as e:
-        logger.critical(e)
+         
+        logger.info(e)
         
-    toast_builder(src_dict['sucess_toast'])
 
 
 
